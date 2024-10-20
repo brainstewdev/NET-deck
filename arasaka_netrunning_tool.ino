@@ -148,7 +148,7 @@ void draw(){
 
   }else{
     u8g2.setCursor(10, 10);
-    for(int i = 0; i < 6 && (i +diff < numLiv);i++){
+    for(int i = 0; i < 7 && (i +diff < numLiv);i++){
       u8g2.setCursor(10,10*(i));
       u8g2.print(piani[i+diff]);
     }
@@ -163,7 +163,7 @@ void update(){
       // vai in mod visualizzazione
       menu = false;
       // crea il labirinto
-      piani = NetHelperLib::generaPiani(numLiv, difficolta, 0);
+      piani = NetHelperLib::generaPiani(numLiv, diff, 0);
     }
     numLiv = map(analogRead(PIN_POT_1),0,1024, 3, 15);
     // calcolo difficoltà
