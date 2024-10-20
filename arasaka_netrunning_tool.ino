@@ -102,7 +102,6 @@ const unsigned char epd_bitmap_logo_arasaka_only [] PROGMEM = {
 
 
 bool menu = true;
-bool printTree = false;
 
 uint8_t numLiv;
 char diff;
@@ -116,9 +115,6 @@ const char* difficolta[] = {
 
 void setup() {
   u8g2.begin();
-
-  Serial.begin(9600);
-  //Serial.begin(9600);
   // imposto pin
   pinMode(PIN_BTN, INPUT);
   pinMode(PIN_POT_1, INPUT);
@@ -137,34 +133,45 @@ void drawWelcomeScreen(){
   u8g2.drawXBMP(0,0, imageWidth, imageHeight, bitmap);
 }
 
+char** piani;
+
 void draw(){
 
   if(menu){
     u8g2.setCursor(10, 10);
-    u8g2.print("Numero Livelli: ");
+    u8g2.print(F("Numero Livelli: "));
     u8g2.print(numLiv);
     u8g2.setCursor(10, 30);
 
-    u8g2.print("\nDifficoltà:");
+    u8g2.print(F("Difficoltà:"));
     u8g2.print(difficolta[diff]);
 
   }else{
     u8g2.setCursor(10, 10);
-    u8g2.print("stampa");
+    for(int i = 0; i < 6 && (i +diff < numLiv);i++){
+      u8g2.setCursor(10,10*(i));
+      u8g2.print(piani[i+diff]);
+    }
   }
   // disegna il logo piccolo
   u8g2.drawXBMP(108,44, logoWidth, logoHeight, epd_bitmap_logo_arasaka_only);
 }
 
 void update(){
+  if(menu){
   if(digitalRead(PIN_BTN) == HIGH){
-    // vai in mod visualizzazione
-    printTree = true;
-    menu = false;
+      // vai in mod visualizzazione
+      menu = false;
+      // crea il labirinto
+      piani = NetHelperLib::generaPiani(numLiv, difficolta, 0);
+    }
+    numLiv = map(analogRead(PIN_POT_1),0,1024, 3, 15);
+    // calcolo difficoltà
+    diff = map(analogRead(PIN_POT_2), 0, 1024, 0, 4);
+  }else{
+    // uso diff per scorrere:
+    diff = map(analogRead(PIN_POT_1),0,1024, 0, numLiv);
   }
-  numLiv = map(analogRead(PIN_POT_1),0,1024, 3, 15);
-  // calcolo difficoltà
-  diff = map(analogRead(PIN_POT_2), 0, 1024, 0, 4);
 }
 
 void loop() {
@@ -175,46 +182,5 @@ void loop() {
     draw();
   } while (u8g2.nextPage());
   //Delay before repeating the loop.
-  Serial.println("uscito");
   delay(50);
 }
-/*
-void displayLogoSmall(){
-    display.drawBitmap(
-    108,
-    44,
-    epd_bitmap_logo_arasaka_only, logoHeight, logoWidth, 1);
-}
-
-void mazeLoop(char numLiv, char diff){
-  
-  // genera il labirinto
-
-  NetHelperLib::Level difficoltaMappata;
-  switch(diff){
-    case 0:
-      difficoltaMappata = NetHelperLib::Level::BASICI;
-      break;
-    case 1:
-        difficoltaMappata = NetHelperLib::Level::NORMALE;
-      break;
-    case 2:
-       difficoltaMappata = NetHelperLib::Level::DISCRETI;
-      break;
-    default:
-      difficoltaMappata = NetHelperLib::Level::AVANZATI;
-      break;
-  }
-  char** piani = NetHelperLib::generaPiani(numLiv, difficoltaMappata, 5);
-  
-  while(true){
-    display.clearDisplay();
-    // mostra per ora il piano attuale
-    display.print(F("->"));
-    //display.print(root->content);
-    displayLogoSmall();
-    display.display();      // Show initial text
-    delay(10);
-  }
-}
-*/
