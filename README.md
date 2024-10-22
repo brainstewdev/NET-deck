@@ -9,5 +9,7 @@ to give it a more Cyberpunk feel i included a splash screen with the Arasaka log
 - 2x10k potentiometer
 - 1xbutton
 - 128x64 i2c display
+## consideration
+in it's current state the GUI and some of the functions are described in italian. 
 ## copyright
 Arasaka, the Arasaka logo and the "demons" which are present as enemies are all intellectual property of CDPR. this is a passion project born by necessity and seek no monetary gain. 
